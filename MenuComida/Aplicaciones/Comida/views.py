@@ -14,7 +14,7 @@ def inicio(request):
 #Presentando en pantalla el formulario de nuevo Estudiante
 def platillos(request):
     platillo=Platillo.objects.all()
-    return render(request,'Platillos.html',{'platillos':platillo})
+    return render(request,'platillos.html',{'platillos':platillo})
 
 
 def verPlatillo(request):
