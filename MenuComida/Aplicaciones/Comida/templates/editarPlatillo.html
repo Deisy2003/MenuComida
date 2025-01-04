@@ -1,0 +1,141 @@
+{% extends "./plantilla.html" %}
+{% block contenido %}
+
+<div class="container mt-5" style="max-width: 95%;">
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+            <!-- Formulario para editar un platillo -->
+            <form action="/procesarEdicionPlatillo/" id="frm_editar_platillo" method="post" enctype="multipart/form-data" class="p-4 border rounded bg-light">
+                <h3 class="text-center">Editar Platillo</h3>
+                <br>
+                {% csrf_token %}
+
+                <!-- Campo oculto para el ID del platillo -->
+                <input type="hidden" name="id" value="{{ platillo.id }}">
+
+                <div class="mb-3">
+                    <label for="txt_nombre" class="form-label"><b>Nombre del Platillo:</b></label>
+                    <input type="text" class="form-control" name="txt_nombre" value="{{ platillo.nombre }}" id="txt_nombre" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="txt_descripcion" class="form-label"><b>Descripción:</b></label>
+                    <textarea class="form-control" name="txt_descripcion" id="txt_descripcion" rows="3" required>{{ platillo.descripcion }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="txt_tipo" class="form-label"><b>Tipo de Platillo:</b></label>
+                    <select class="form-control" name="txt_tipo" id="txt_tipo" required>
+                        <option value="" disabled>Seleccionar</option>
+                        <option value="Sopa" {% if platillo.tipo == "Sopa" %}selected{% endif %}>Sopa</option>
+                        <option value="Segundo" {% if platillo.tipo == "Segundo" %}selected{% endif %}>Segundo</option>
+                        <option value="Bebida" {% if platillo.tipo == "Bebida" %}selected{% endif %}>Bebida</option>
+                        <option value="Postre" {% if platillo.tipo == "Postre" %}selected{% endif %}>Postre</option>
+                    </select>
+                </div>
+
+               
+                <div class="mb-3">
+                    <label for="txt_precio" class="form-label"><b>Precio:</b></label>
+                    <!-- Asegúrate de que el valor de precio sea formateado correctamente -->
+                    <input type="number" step="0.01" class="form-control" name="txt_precio" value="{{ platillo.precio|floatformat:2 }}" id="txt_precio" required>
+                </div>
+                
+
+                <div class="mb-3">
+                    <label for="txt_informacion_nutricional" class="form-label"><b>Información Nutricional:</b></label>
+                    <textarea class="form-control" name="txt_informacion_nutricional" id="txt_informacion_nutricional" rows="6" required>{{ platillo.informacion_nutricional }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="txt_fecha_disponible" class="form-label"><b>Fecha Disponible:</b></label>
+                    <input type="date" class="form-control" name="txt_fecha_disponible" value="{{ platillo.fecha_disponible|date:'Y-m-d' }}" id="txt_fecha_disponible" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="foto_platillo" class="form-label"><b>Foto del Platillo:</b></label>
+                    <input type="file" class="form-control" name="foto_platillo" id="foto_platillo" accept="image/*">
+                    {% if platillo.foto_platillo %}
+                        <img src="{{ platillo.foto_platillo.url }}" alt="Foto del Platillo" class="mt-2" style="max-width: 100px; height: auto;">
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="submit" class="btn btn-success btn-lg mx-2">Editar</button>
+                    <button type="reset" class="btn btn-danger btn-lg mx-2" onclick="window.location.href='{% url 'verPlatillo' %}'">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#frm_editar_platillo").validate({
+            rules: {
+                "txt_nombre": {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 200,
+                    letras: true,
+                },
+                
+                "txt_descripcion": {
+                    required: true,
+                    minlength: 10,
+                },
+                "txt_precio": {
+                    required: true,
+                    min: 0
+                },
+                "txt_informacion_nutricional": {
+                    required: true,
+                    minlength: 10
+                },
+                "txt_tipo": {
+                    required: true,
+                },
+                "txt_fecha_disponible": {
+                    required: true,
+                }
+  
+                
+            },
+            messages: {
+                "txt_nombre": {
+                    required: "El nombre es obligatorio.",
+                    minlength: "El nombre debe tener al menos 3 caracteres.",
+                    maxlength: "El nombre no puede exceder los 200 caracteres."
+                },
+                
+                "txt_descripcion": {
+                    required: "La descripción es obligatorio.",
+                    minlength: "El nombre debe tener al menos 10 caracteres."
+                },
+                "txt_precio": {
+                    required: "El precio es obligatorio.",
+                    min: "No se acepta numero menores a 0."
+                },
+                "txt_informacion_nutricional": {
+                    required: "La información nutricional es obligatorio.",
+                    minlength: "El nombre debe tener al menos 10 caracteres."
+                },
+                "txt_tipo": {
+                    required: "Selecione un tipo.",
+                },
+                "txt_fecha_disponible": {
+                    required: "La fecha es obligatorio.",
+                }
+               
+                
+                
+            },
+            
+        });
+    });
+</script>
+
+{% endblock %}

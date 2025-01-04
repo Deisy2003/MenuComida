@@ -1,0 +1,150 @@
+{% extends "./plantilla.html" %}
+{% block contenido %}
+
+
+
+<div class="container mt-5" style="max-width: 90%;">
+    <div class="row justify-content-center">
+        <!-- Formulario para agregar nuevos platillos -->
+        <div class="col-md-6">
+            <form action="/guardarPlatillo/" id="frm_nuevo_platillo" method="post" enctype="multipart/form-data"  class="p-4 border rounded bg-light">
+                <h3 class="text-center">Agregar Nuevo Platillo:</h3>
+                <br>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="txt_nombre" class="form-label"><b>Nombre:</b></label>
+                    <input type="text" class="form-control" name="txt_nombre" id="txt_nombre" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="foto_platillo" class="form-label"><b>IMAGEN:</b></label>
+                    <input type="file" class="form-control" name="foto_platillo" accept="image/*" id="foto_platillo">
+                </div>
+
+                <div class="mb-3">
+                    <label for="txt_descripcion" class="form-label"><b>Descripción:</b></label>
+                    <textarea class="form-control" name="txt_descripcion" id="txt_descripcion" rows="3" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="txt_precio" class="form-label"><b>Precio:</b></label>
+                    <input type="number" step="0.01" class="form-control" name="txt_precio" id="txt_precio" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="txt_info_nutricional" class="form-label"><b>Información Nutricional:</b></label>
+                    <textarea class="form-control" name="txt_info_nutricional" id="txt_info_nutricional" rows="6" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="txt_tipo" class="form-label"><b>Tipo de Platillo:</b></label>
+                    <select class="form-control" name="txt_tipo" id="txt_tipo" required>
+                        <option value="" disabled selected>Seleccionar</option>
+                        <option value="Sopa">Sopa</option>
+                        <option value="Segundo">Segundo</option>
+                        <option value="Bebida">Bebida</option>
+                        <option value="Postre">Postre</option>
+                    </select>
+                </div>
+                
+
+                <div class="mb-3">
+                    <label for="txt_fecha_disponible" class="form-label"><b>Fecha Disponible:</b></label>
+                    <input type="date" class="form-control" name="txt_fecha_disponible" id="txt_fecha_disponible" required>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-success btn-lg mx-2">Guardar</button>
+                    <button type="reset" class="btn btn-danger btn-lg mx-2" onclick="window.location.href='{% url 'verPlatillo' %}'">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'verPlatillo' %}" class="btn btn-warning btn-lg">
+        <i class="fa fa-utensils"></i> Ver Todos los Platillos
+    </a>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#frm_nuevo_platillo").validate({
+            rules: {
+                "txt_nombre": {
+                    required: true,
+                    minlength: 3,
+                    maxlength: 200,
+                    letras: true,
+                },
+                "foto_platillo": {
+                    required: true,
+                    extension: "jpg|jpeg|png|gif"
+                },
+                "txt_descripcion": {
+                    required: true,
+                    minlength: 10
+                },
+                "txt_precio": {
+                    required: true,
+                    min: 0
+                },
+                "txt_info_nutricional": {
+                    required: true,
+                    minlength: 10
+                },
+                "txt_tipo": {
+                    required: true,
+                },
+                "txt_fecha_disponible": {
+                    required: true,
+                }
+
+
+                
+                
+                
+            },
+            messages: {
+                "txt_nombre": {
+                    required: "El nombre es obligatorio.",
+                    minlength: "El nombre debe tener al menos 3 caracteres.",
+                    maxlength: "El nombre no puede exceder los 200 caracteres."
+                },
+                "foto_platillo": {
+                    required: "Debe subir una imagen.",
+                    extension: "La imagen debe ser en formato JPG, JPEG, PNG o GIF."
+                },
+                "txt_descripcion": {
+                    required: "La descripción es obligatorio.",
+                    minlength: "El nombre debe tener al menos 10 caracteres.",
+                },
+                "txt_precio": {
+                    required: "El precio es obligatorio.",
+                    min: "No se acepta numero menores a 0."
+                },
+                "txt_info_nutricional": {
+                    required: "La información nutricional es obligatorio.",
+                    minlength: "El nombre debe tener al menos 10 caracteres.",
+                },
+                "txt_tipo": {
+                    required: "Selecione un tipo.",
+                },
+                "txt_fecha_disponible": {
+                    required: "La fecha es obligatorio.",
+                }
+               
+                
+                
+            },
+            
+        });
+    });
+</script>
+
+
+{% endblock %}

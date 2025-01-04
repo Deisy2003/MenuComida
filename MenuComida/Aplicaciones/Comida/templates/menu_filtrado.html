@@ -1,0 +1,43 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+<section class="menu py-5 bg-light" id="menu">
+    <div class="container text-center">
+        <h2 class="font-weight-bold mb-4">Menú del Día</h2>
+        <p class="lead text-muted mb-5">Descubre nuestras opciones deliciosas disponibles hoy.</p>
+
+        <!-- Barra de Filtros Elegante usando Bootstrap -->
+        <div class="d-flex justify-content-center mb-5">
+            <div class="btn-group" role="group">
+                <a href="{% url 'menu_filtrado_tipo' 'Sopa' %}" class="btn btn-outline-dark btn-lg px-4 py-2">Sopas</a>
+                <a href="{% url 'menu_filtrado_tipo' 'Segundo' %}" class="btn btn-outline-dark btn-lg px-4 py-2">Segundos</a>
+                <a href="{% url 'menu_filtrado_tipo' 'Bebida' %}" class="btn btn-outline-dark btn-lg px-4 py-2">Bebidas</a>
+                <a href="{% url 'menu_filtrado_tipo' 'Postre' %}" class="btn btn-outline-dark btn-lg px-4 py-2">Postres</a>
+                <a href="{% url 'menu_filtrado' %}" class="btn btn-outline-dark btn-lg px-4 py-2">Todos</a>
+            </div>
+        </div>
+
+        <!-- Mostrando Platillos Filtrados con Bootstrap Cards -->
+        <div class="row justify-content-center">
+            {% for platillo in platillos %}
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-light rounded">
+                        {% if platillo.foto_platillo %}
+                            <img src="{{ platillo.foto_platillo.url }}" class="card-img-top rounded-top" alt="{{ platillo.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="/media/fotos_platillo/default.jpg" class="card-img-top rounded-top" alt="{{ platillo.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ platillo.nombre }}</h5>
+                            <p class="card-text">${{ platillo.precio }}</p>
+                            <a href="{% url 'platillo_detalle' platillo.id %}" class="btn btn-dark btn-sm">Ver más...</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No hay platillos disponibles de este tipo para hoy.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

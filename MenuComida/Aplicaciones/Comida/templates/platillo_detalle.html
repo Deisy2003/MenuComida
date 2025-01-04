@@ -1,0 +1,159 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+<!-- Botón para regresar al menú -->
+<div class="text-end mt-4">
+    <a href="{% url 'menu_filtrado' %}" class="btn btn-dark btn-lg">
+        <i class="fa fa-arrow-left"></i> 
+    </a>
+</div>
+
+<div class="container mt-5" style="max-width: 800px; margin: 0 auto;">
+    <!-- Nombre y descripción en un solo bloque -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="display-4 font-weight-bold text-center">{{ platillo.nombre }}</h2>
+            <p class="text-justify"><b>Descripción:</b> {{ platillo.descripcion }}</p>
+            <p><b>Precio:</b> ${{ platillo.precio }}</p>
+        </div>
+    </div>
+
+    <!-- Imagen y detalles del platillo en un solo bloque -->
+    <div class="row mb-5 align-items-center">
+        <!-- Imagen del platillo -->
+        <div class="col-md-6">
+            {% if platillo.foto_platillo %}
+                <img src="{{ platillo.foto_platillo.url }}" class="img-fluid rounded shadow" alt="{{ platillo.nombre }}" style="max-height: 350px; object-fit: cover; width: 100%;">
+            {% else %}
+                <img src="/media/fotos_platillo/default.jpg" class="img-fluid rounded shadow" alt="{{ platillo.nombre }}" style="max-height: 350px; object-fit: cover; width: 100%;">
+            {% endif %}
+        </div>
+
+        <!-- Información Nutricional: en el lado derecho -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-light rounded p-4 h-100">
+                <h4 class="mt-4">Información Nutricional:</h4>
+                <ul style="list-style-type: disc; padding-left: 20px;">
+                    {% for item in platillo.informacion_nutricional.splitlines %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección para calificar -->
+    <div class="bg-white p-4 rounded shadow-sm">
+        <h3 class="mt-4 mb-3 text-center">Calificar Platillo</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="usuario" class="form-label"><b>Nombre:</b></label>
+                <input type="text" class="form-control" id="usuario" name="usuario" required>
+            </div>
+
+            <!-- Calificación con estrellas -->
+            <div class="mb-3">
+                <label for="calificacion" class="form-label"><b>Calificación:</b></label>
+                <div id="calificacion" class="rating">
+                    <input type="radio" id="star1" name="calificacion" value="1" class="d-none" {% if calificacion.calificacion == 1 %}checked{% endif %}>
+                    <label for="star1" class="fa fa-star star"></label>
+
+                    <input type="radio" id="star2" name="calificacion" value="2" class="d-none" {% if calificacion.calificacion == 2 %}checked{% endif %}>
+                    <label for="star2" class="fa fa-star star"></label>
+
+                    <input type="radio" id="star3" name="calificacion" value="3" class="d-none" {% if calificacion.calificacion == 3 %}checked{% endif %}>
+                    <label for="star3" class="fa fa-star star"></label>
+
+                    <input type="radio" id="star4" name="calificacion" value="4" class="d-none" {% if calificacion.calificacion == 4 %}checked{% endif %}>
+                    <label for="star4" class="fa fa-star star"></label>
+
+                    <input type="radio" id="star5" name="calificacion" value="5" class="d-none" {% if calificacion.calificacion == 5 %}checked{% endif %}>
+                    <label for="star5" class="fa fa-star star"></label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="comentario" class="form-label"><b>Comentario:</b></label>
+                <textarea class="form-control" id="comentario" name="comentario" rows="3"></textarea>
+            </div>
+            
+            <!-- Botón de calificación -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg">Calificar</button>
+            </div>
+        </form>
+    </div>
+
+    
+
+    <!-- Sección de comentarios -->
+    <h3 class="mt-5">Comentarios</h3>
+    {% for calificacion in calificaciones %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ calificacion.usuario }}</h5>
+                <p class="card-text">Calificación: {{ calificacion.calificacion }} estrellas</p>
+                <p class="card-text">{{ calificacion.comentario }}</p>
+
+                <!-- Formulario para eliminar calificación -->
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="eliminar_calificacion" value="{{ calificacion.id }}">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta calificación?');">Eliminar</button>
+                </form>
+            </div>
+            
+        </div>
+    {% empty %}
+        <p class="text-muted">No hay comentarios aún.</p>
+    {% endfor %}
+</div>
+
+<!-- Estilos y JavaScript para las estrellas -->
+<style>
+    .star {
+        font-size: 2rem;
+        color: gray;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .star:hover {
+        color: gold;
+    }
+
+    input[type="radio"]:checked + label {
+        color: gold;
+    }
+</style>
+
+<script>
+    // JavaScript para la interacción de las estrellas
+    const stars = document.querySelectorAll('.star');
+    stars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const index = parseInt(this.getAttribute('for').replace('star', ''));
+            highlightStars(index);
+        });
+
+        star.addEventListener('mouseout', function() {
+            const checked = document.querySelector('input[type="radio"]:checked');
+            const selectedIndex = checked ? checked.value : 0;
+            highlightStars(selectedIndex);
+        });
+    });
+
+    function highlightStars(index) {
+        stars.forEach(star => {
+            const starIndex = parseInt(star.getAttribute('for').replace('star', ''));
+            if (starIndex <= index) {
+                star.style.color = 'gold';
+            } else {
+                star.style.color = 'gray';
+            }
+        });
+    }
+</script>
+
+{% endblock %}
